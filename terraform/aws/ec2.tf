@@ -23,6 +23,15 @@ resource "aws_instance" "cis2-inst" {
     # kms_key_id                            = 
   }
 
+  ebs_block_device {
+    device_name           = "/dev/sdf"
+    volume_size           = "30"
+    volume_type           = "gp2"
+    delete_on_termination = "true"
+    encrypted             = "true"
+    # kms_key_id                            =
+  }
+
   tags = {
     Name = "aws-cis2-training"
   }
