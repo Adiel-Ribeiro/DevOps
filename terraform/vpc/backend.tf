@@ -3,7 +3,7 @@ terraform {
   backend "s3" {
     region  = "us-east-1"
     profile = "default"
-    key     = "tfstate-us-east-1"
+    key     = "tfstate-vpc-us-east-1"
     bucket  = "nuvym-terraform"
   }
 }
