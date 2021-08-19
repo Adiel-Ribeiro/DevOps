@@ -130,13 +130,6 @@ resource "aws_route_table" "internet_route-virginia" {
   }
 }
 
-#Overwrite default route table of VPC(Master) with our route table entries
-#resource "aws_main_route_table_association" "set-master-default-rt-assoc" {
-#  provider       = aws.region-master
-#  vpc_id         = aws_vpc.vpc_master.id
-#  route_table_id = aws_route_table.internet_route.id
-#}
-
 #Create route table in us-east-2
 resource "aws_route_table" "internet_route_ohio" {
   provider = aws.ohio
@@ -157,9 +150,14 @@ resource "aws_route_table" "internet_route_ohio" {
   }
 }
 
-#Overwrite default route table of VPC(Worker) with our route table entries
-#resource "aws_main_route_table_association" "set-worker-default-rt-assoc" {
-#  provider       = aws.region-worker
-#  vpc_id         = aws_vpc.vpc_master_oregon.id
-#  route_table_id = aws_route_table.internet_route_oregon.id
-#}
+resource "aws_route_table_association" "virginia-subnet-a" {
+  provider       = aws.virginia
+  subnet_id      = aws_subnet.subnet_1.id
+  route_table_id = aws_route_table.internet_route-virginia.id
+}
+
+resource "aws_route_table_association" "ohio-subnet-c" {
+  provider       = aws.ohio
+  subnet_id      = aws_subnet.subnet_1-ohio.id
+  route_table_id = aws_route_table.internet_route_ohio.id
+}
