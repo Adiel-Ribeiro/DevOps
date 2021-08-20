@@ -5,8 +5,8 @@ provider "aws" {
 resource "aws_instance" "virginia-1a-inst" {
   ami                         = var.aws-ami-virginia
   instance_type               = "t3.micro"
-  vpc_security_group_ids      = [var.virginia-1a-sg]
-  subnet_id                   = var.virginia-1a-subnet
+  vpc_security_group_ids      = [aws_security_group.virginia-sg.id]
+  subnet_id                   = aws_subnet.subnet_1.id
   associate_public_ip_address = "1"
   # iam_instance_profile                   =        "ecsInstanceRole" 
   # cpu_core_count                         =        "1" 
@@ -40,8 +40,8 @@ resource "aws_instance" "virginia-1a-inst" {
 resource "aws_instance" "virginia-1b-inst" {
   ami                         = var.aws-ami-virginia
   instance_type               = "t3.micro"
-  vpc_security_group_ids      = [var.virginia-1b-sg]
-  subnet_id                   = var.virginia-1b-subnet
+  vpc_security_group_ids      = [aws_security_group.virginia-1b-sg.id]
+  subnet_id                   = aws_subnet.subnet_2.id
   associate_public_ip_address = "1"
   # iam_instance_profile                   =        "ecsInstanceRole" 
   # cpu_core_count                         =        "1" 
@@ -72,12 +72,12 @@ resource "aws_instance" "virginia-1b-inst" {
 
 }
 
-
 resource "aws_instance" "ohio-1a-inst" {
+  provider                    = aws.ohio
   ami                         = var.aws-ami-ohio
   instance_type               = "t3.micro"
-  vpc_security_group_ids      = [var.ohio-sg]
-  subnet_id                   = var.ohio-subnet
+  vpc_security_group_ids      = [aws_security_group.ohio-sg.id]
+  subnet_id                   = aws_subnet.subnet_1-ohio.id
   associate_public_ip_address = "1"
   # iam_instance_profile                   =        "ecsInstanceRole" 
   # cpu_core_count                         =        "1" 
