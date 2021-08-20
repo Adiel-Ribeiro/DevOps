@@ -32,11 +32,17 @@ It allows all inbound and outbound traffic
 ######################################################################################
 
 The objective from this lab is to show that you can ping and ssh from Virginia 1a 
+
 instance to Ohio 1a trought their internal IP address , but you can't repeat this 
+
 action from Virginia 1b, even if Ohio instance accepts all inbound traffic
+
 It's because there aren't routes from subnets in Virginia 1b to Ohio 1a
+
 If you add these routes, you will access Ohio 1a instance from Virginia 1b subnet 
+
 ######################################################################################
 
 Enjoy! 
+
 nuvym.com
