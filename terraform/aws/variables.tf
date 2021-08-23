@@ -107,3 +107,8 @@ variable "ohio-aza" {
   type    = string
   default = "us-east-2a"
 }
+
+variable "key-cis2" {
+  type    = string
+  default = "~/.ssh/id_rsa_ec2-cis2.pub"
+}
