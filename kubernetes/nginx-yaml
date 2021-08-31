@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lp
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: lp-nginx-vol
+spec:
+  storageClassName: lp-nginx-stclass
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/nfs/storage/lp/nginx"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: lp-site-vol
+spec:
+  storageClassName: lp-site-stclass
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/nfs/storage/lp/site"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+   name: lp-nginx-claim
+   namespace: lp
+spec:
+  storageClassName: lp-nginx-stclass
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+   name: lp-site-claim
+   namespace: lp
+spec:
+  storageClassName: lp-site-stclass
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lp-web-app
+  namespace: lp
+  labels:
+    app: lp-web-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lp-web-app
+  template:
+    metadata:
+      labels:
+        app: lp-web-app
+    spec:
+      volumes: 
+        - name: lp-nginx-vol
+          persistentVolumeClaim:
+            claimName: lp-nginx-claim
+        - name: lp-site-vol
+          persistentVolumeClaim:
+            claimName: lp-site-claim
+      containers:
+      - name: lp-web-cnt
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+        volumeMounts:
+           - name: lp-nginx-vol
+             mountPath: "/etc/nginx"
+           - name: lp-site-vol
+             mountPath: "/usr/share/nginx/"
+        startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 2
+            periodSeconds: 10  
+        livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 2
+            periodSeconds: 10
+            terminationGracePeriodSeconds: 0
+        readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 2
+            periodSeconds: 5
+        resources:
+            limits:
+              memory: "30M"
+              cpu: "50m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lp-elb
+  namespace: lp
+spec:
+  selector:
+    app: lp-web-app
+  type: LoadBalancer  
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30001
